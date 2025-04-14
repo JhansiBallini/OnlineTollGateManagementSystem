@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Gateway - TollPay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/payment-styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="payment-container">
+        <h2>Complete Your Payment</h2>
+
+        <!-- User Details Form -->
+        <form id="user-details-form" class="payment-form">
+            <label for="full-name">Full Name</label>
+            <input type="text" id="full-name" placeholder="Enter your full name" required>
+
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" placeholder="Enter your phone number" required>
+
+            <!-- Adding Vehicle Number Input -->
+            <label for="vehicle-number">Vehicle Number</label>
+            <input type="text" id="vehicle-number" placeholder="Enter your vehicle number" required>
+
+            <button type="submit">Proceed to Payment</button>
+        </form>
+
+        <!-- Payment Options -->
+        <div id="payment-options" class="hidden">
+            <h3>Select Payment Method</h3>
+            <button id="credit-debit-btn" class="payment-option-btn">Credit/Debit Card</button>
+            <button id="upi-btn" class="payment-option-btn">UPI</button>
+            <button id="qr-btn" class="payment-option-btn">QR Code</button>
+            <!-- Adding Pay using Wallet Button -->
+            <button id="wallet-pay-btn" class="payment-option-btn">Pay using Wallet</button>
+        </div>
+
+        <!-- QR Code Section -->
+        <div id="qr-section" class="hidden">
+            <h3>Scan QR Code to Pay</h3>
+            <canvas id="qr-code"></canvas>
+            <p id="qr-expiry-msg">This QR code will expire in <span id="qr-timer">3</span> minutes.</p>
+        </div>
+
+        <!-- Redirect Section for UPI -->
+        <div id="upi-redirect" class="hidden">
+            <h3>Redirecting to UPI App...</h3>
+        </div>
+
+        <!-- Loading Animation & Popup -->
+        <div id="loading" class="loading-overlay hidden">
+            <div class="loader"></div>
+        </div>
+
+        <div id="payment-success-popup" class="popup hidden">
+            <div class="popup-content">
+                <h3>Payment Successful!</h3>
+                <p>Your toll payment has been processed successfully.</p>
+                <button id="close-popup" class="payment-option-btn">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Retrieve toll price from localStorage
+        const tollPrice = localStorage.getItem('tollPrice') || '0.00';
+    
+        // Handle form submission
+        document.getElementById('user-details-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            document.getElementById('user-details-form').classList.add('hidden');
+            document.getElementById('payment-options').classList.remove('hidden');
+        });
+    
+        // Handle UPI button click
+        document.getElementById('upi-btn').addEventListener('click', function () {
+            document.getElementById('payment-options').classList.add('hidden');
+            document.getElementById('upi-redirect').classList.remove('hidden');
+    
+            // Redirect to UPI app with the dynamic toll price
+            setTimeout(function () {
+                window.location.href = `upi://pay?pa=example@upi&pn=TollGatePro&mc=0000&tid=1234567890&tr=1234567890&tn=Toll Payment&am=${tollPrice}&cu=INR`;
+            }, 2000);
+        });
+    
+        // Handle QR code button click
+        document.getElementById('qr-btn').addEventListener('click', function () {
+            document.getElementById('payment-options').classList.add('hidden');
+            document.getElementById('qr-section').classList.remove('hidden');
+    
+            // Generate QR code with the dynamic toll price
+            const qr = new QRious({
+                element: document.getElementById('qr-code'),
+                value: `upi://pay?pa=example@upi&pn=TollGatePro&mc=0000&tid=1234567890&tr=1234567890&tn=Toll Payment&am=${tollPrice}&cu=INR`,
+                size: 200
+            });
+    
+            // QR code expiration timer
+            let timeLeft = 3 * 60; // 3 minutes
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('qr-timer').textContent = Math.floor(timeLeft / 60) + ":" + (timeLeft % 60).toString().padStart(2, '0');
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('qr-section').innerHTML = "<p>The QR code has expired. Please refresh to generate a new one.</p>";
+                }
+            }, 1000);
+        });
+
+        document.getElementById('wallet-pay-btn').addEventListener('click', function () {
+            let walletBalance = parseFloat(localStorage.getItem('walletBalance')) || 0;
+            let tollPrice = parseFloat(localStorage.getItem('tollPrice')) || 0;
+            
+            if (walletBalance >= tollPrice) {
+                const loadingElement = document.getElementById('loading');
+                loadingElement.style.visibility = 'visible';
+                
+                setTimeout(() => {
+                    walletBalance -= tollPrice;
+                    localStorage.setItem('walletBalance', walletBalance);
+                    loadingElement.style.visibility = 'hidden';
+                    document.getElementById('payment-success-popup').style.display = 'block';
+                }, 2000);
+            } else {
+                alert('Insufficient wallet balance!');
+            }
+        });
+    
+        // Credit/Debit Card placeholder (can expand with actual integration)
+        document.getElementById('credit-debit-btn').addEventListener('click', function () {
+            alert('Credit/Debit Card payment is under development.');
+        });
+
+        document.getElementById('close-popup').addEventListener('click', function () {
+            document.getElementById('payment-success-popup').style.visibility = 'hidden';
+            window.location.href = 'tollpay.html'; // Redirect to tollpay.html
+        });
+    </script>
+</body>
+</html>

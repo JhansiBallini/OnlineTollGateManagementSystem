@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - TollPay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/registration-styles.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body> 
+    <!-- Registration Form -->
+    <div class="registration-container">
+        <h2>Create an Account</h2>
+        <form action="/api/register" method="POST" class="registration-form">
+            <input type="text" id="username" name="username" placeholder="Username" required>
+            <input type="email" id="email" name="email" placeholder="Email" required>
+            <input type="text" id="license_number" name="license_number" placeholder="License Number" required>
+            <div class="password-container">
+                <input type="password" id="password" name="password" placeholder="Password" required>
+                <i class="fas fa-eye" id="togglePassword"></i>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        <p class="login-link">Already have an account? <a href="login.html">Login here</a></p>
+    </div>
+
+    <!-- Popup for Successful Registration -->
+    <div id="popupContainer" class="popup-container">
+        <div class="popup">
+            <h3>Registration Successful!</h3>
+            <p>Your account has been created. You can now log in.</p>
+            <button id="goToLogin">Go to Login</button>
+        </div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='js/registration-script.js') }}"></script>
+</body>
+</html>

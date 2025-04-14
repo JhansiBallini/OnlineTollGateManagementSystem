@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toll Pay - TollPay</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tollpay-styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+</head>
+<body>
+    <div class="wallet-container">
+        <button id="walletButton">💰 Wallet</button>
+        <div id="walletPopup" class="wallet-popup">
+            <div class="wallet-content">
+                <h2>Wallet</h2>
+                <p><strong>Balance:</strong> ₹<span id="walletBalance">1000</span></p>
+                
+                <!-- Add Money Section -->
+                <div class="add-money">
+                    <input type="number" id="amountInput" placeholder="Enter amount" min="1">
+                    <button id="addMoneyButton">Add Money</button>
+                </div>
+
+                <h3>Transaction History</h3>
+                <ul id="transactionHistory"></ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toll Pay Container -->
+    <div class="tollpay-container">
+        <h2>Calculate Toll Price</h2>
+        <form id="tollpay-form" class="tollpay-form">
+            <label for="source">Enter Source</label>
+            <input type="text" id="source" placeholder="Enter source location" required>
+
+            <label for="destination">Enter Destination</label>
+            <input type="text" id="destination" placeholder="Enter destination location" required>
+
+            <label for="vehicle-type">Select Vehicle Type</label>
+            <select id="vehicle-type" required>
+                <option value="">-- Select Vehicle Type --</option>
+                <option value="car">Car</option>
+                <option value="bus">Bus</option>
+                <option value="truck">Truck</option>
+            </select>
+
+            <button type="submit">Get the Toll Price</button>
+        </form>
+
+        <!-- Map Section -->
+        <div id="map-container">
+            <div id="map"></div>
+            <p id="toll-price" class="toll-price">Toll Price: <span>--</span></p>
+            <button id="goToPay">Pay Now</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/tollpay-script.js') }}"></script>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+</body>
+</html>
